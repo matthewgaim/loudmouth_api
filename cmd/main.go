@@ -9,6 +9,7 @@ import (
 	"github.com/matthewgaim/loudmouth_api/internal/auth"
 	"github.com/matthewgaim/loudmouth_api/internal/comments"
 	"github.com/matthewgaim/loudmouth_api/internal/db"
+	"github.com/matthewgaim/loudmouth_api/internal/ws"
 )
 
 func main() {
@@ -35,11 +36,11 @@ func main() {
 
 	mux.HandleFunc("POST /signup", auth.Signup(pg))
 	mux.HandleFunc("POST /signin", auth.Signin(pg))
-	mux.HandleFunc("GET /get-comments", auth.AuthMiddleware(comments.GetComments(pg)))
-	mux.HandleFunc("POST /make-comment", auth.AuthMiddleware(comments.MakeComment(pg)))
-
-	fmt.Println("Server starting on localhost:8000")
+	mux.HandleFunc("GET /get-comments", comments.GetComments(pg))
+	mux.HandleFunc("POST /make-comment", comments.MakeComment(pg))
+	mux.HandleFunc("/ws", ws.HandleWebSocket)
+	log.Println("Server starting on localhost:8000")
 	if err := http.ListenAndServe("localhost:8000", mux); err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 }
