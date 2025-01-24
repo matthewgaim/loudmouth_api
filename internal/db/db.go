@@ -10,7 +10,9 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func ConnectToDatabase() (*sql.DB, error) {
+var DBConn *sql.DB
+
+func ConnectToDatabase() {
 	fmt.Println("Connecting to DB")
 
 	pg_username := os.Getenv("PG_USERNAME")
@@ -23,10 +25,9 @@ func ConnectToDatabase() (*sql.DB, error) {
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
-		return nil, err
 	}
 	fmt.Println("Connected to DB!")
-	return db, nil
+	DBConn = db
 }
 
 func ConnectToRedis() *redis.Client {
