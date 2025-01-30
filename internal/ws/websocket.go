@@ -31,7 +31,10 @@ func HandleWebSocket() http.HandlerFunc {
 			errors.RespondWithError(w, http.StatusBadRequest, "media_id is required")
 			return
 		}
-
+		if err := newMediaInDb(mediaID); err != nil {
+			log.Printf("Failed to find media / upload new media: %s\n", err.Error())
+			return
+		}
 		upgrader := websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -85,10 +88,24 @@ func HandleWebSocket() http.HandlerFunc {
 	}
 }
 
-func newHub(media_id string) *Hub {
-	log.Printf("New hub: %s\n", media_id)
+func newMediaInDb(media_host_id string) error {
+	_, err := db.DBConn.Exec(`
+		INSERT INTO media
+			(media_host_id, title, media_type)
+		VALUES
+			($1, $2, $3)
+		ON CONFLICT DO NOTHING
+	`, media_host_id, "CHANGE_THIS_TITLE", "CHANGE_THIS_MEDIA_TYPE")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func newHub(mediaID string) *Hub {
+	log.Printf("New hub: %s\n", mediaID)
 	new_hub := &Hub{
-		media_id:               media_id,
+		media_id:               mediaID,
 		broadcastLiveMessage:   make(chan InboundMessage),
 		broadcastStaleMessages: make(chan *Client),
 		register:               make(chan *Client),
@@ -166,15 +183,15 @@ func (h *Hub) run() {
 	}
 }
 
-func getHub(movieID string) *Hub {
+func getHub(mediaID string) *Hub {
 	hubsMutex.Lock()
 	defer hubsMutex.Unlock()
 
-	if hub, exists := hubs[movieID]; exists {
+	if hub, exists := hubs[mediaID]; exists {
 		return hub
 	}
 
-	hub := newHub(movieID)
-	hubs[movieID] = hub
+	hub := newHub(mediaID)
+	hubs[mediaID] = hub
 	return hub
 }
