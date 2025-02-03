@@ -19,11 +19,11 @@ func main() {
 	db.ConnectToDatabase()
 
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello world!")
 	})
 	mux.HandleFunc("/ws", ws.HandleWebSocket())
+
 	log.Println("Server starting on localhost:8000")
 	if err := http.ListenAndServe("localhost:8000", mux); err != nil {
 		log.Println(err.Error())
