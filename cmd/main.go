@@ -25,7 +25,7 @@ func main() {
 	mux.HandleFunc("/ws", ws.HandleWebSocket())
 
 	log.Println("Server starting on localhost:8000")
-	if err := http.ListenAndServe("localhost:8000", mux); err != nil {
+	if err := http.ListenAndServe(":8000", mux); err != nil {
 		log.Println(err.Error())
 	}
 }
