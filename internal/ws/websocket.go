@@ -26,6 +26,7 @@ var comment_id_tester = 1
 
 func HandleWebSocket() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Opening new connection")
 		mediaID := r.URL.Query().Get("media_id")
 		if mediaID == "" {
 			errors.RespondWithError(w, http.StatusBadRequest, "media_id is required")

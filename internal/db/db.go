@@ -20,11 +20,11 @@ func ConnectToDatabase() {
 	pg_db_ip := os.Getenv("PG_DB_IP")
 	pg_db_name := os.Getenv("PG_DB_NAME")
 
-	connStr := fmt.Sprintf("postgresql://%v:%v@%v/%v?sslmode=disable", pg_username, pg_password, pg_db_ip, pg_db_name)
+	connStr := fmt.Sprintf("postgresql://%v:%v@%v:5432/%v?sslmode=disable", pg_username, pg_password, pg_db_ip, pg_db_name)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening connection to DB: %s\n", err.Error())
 	}
 	fmt.Println("Connected to DB!")
 	DBConn = db
