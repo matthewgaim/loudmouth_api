@@ -14,7 +14,7 @@ WORKDIR /
 
 COPY --from=build-stage /loudmouth_api /loudmouth_api
 
-EXPOSE 8000
+EXPOSE 8443
 
 USER nonroot:nonroot
 
